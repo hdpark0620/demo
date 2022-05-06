@@ -1,10 +1,10 @@
-package com.example.demo.dao;
+package com.example.demo.domain.dao;
 
 import org.seasar.doma.Dao;
 import org.seasar.doma.Select;
 import org.seasar.doma.boot.ConfigAutowireable;
 
-import com.example.demo.entity.Employee;
+import com.example.demo.domain.entity.Employee;
 
 @Dao
 @ConfigAutowireable

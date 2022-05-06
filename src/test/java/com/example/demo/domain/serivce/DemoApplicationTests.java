@@ -1,4 +1,4 @@
-package com.example.demo.serivce;
+package com.example.demo.domain.serivce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import com.example.demo.DemoApplication;
-import com.example.demo.entity.Employee;
+import com.example.demo.domain.entity.Employee;
 
 @SpringBootTest(classes = DemoApplication.class, webEnvironment = WebEnvironment.NONE)
 public class DemoApplicationTests {

@@ -1,8 +1,8 @@
-package com.example.demo.serivce;
+package com.example.demo.domain.serivce;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.example.demo.dao.EmployeeDao;
+import com.example.demo.domain.dao.EmployeeDao;
 
 public abstract class abstractService {
 	

@@ -6,7 +6,9 @@ plugins {
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+ext.dependentVersion = '2.28.0'
 sourceCompatibility = '17'
+
 def domaResources = ['doma.compile.config', 'META-INF/**/*.sql', 'META-INF/**/*.script']
 
 configurations {
@@ -18,35 +20,35 @@ configurations {
 
 task copyDomaResourcesJava(type: Copy) {
     from sourceSets.main.resources.srcDirs
-    println 'SQLファイルのコピー元'
-    println sourceSets.main.resources.srcDirs
     into compileJava.destinationDir
-    println 'SQLファイルのコピー先'
-    println compileJava.destinationDir
     include domaResources
 }
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
+	
+	// lombok setting
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// doma-gen setting
+	annotationProcessor 'org.seasar.doma:doma-processor:2.35.0'
+	implementation 'org.seasar.doma.boot:doma-spring-boot-starter:1.4.0'
+	implementation "org.seasar.doma:doma-gen:${dependentVersion}"
+    domaGenRuntime 'org.seasar.doma:doma-gen:${dependentVersion}'
+    domaGenRuntime 'mysql:mysql-connector-java:8.0.13'
+    
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testCompileOnly 'org.projectlombok:lombok'  // 追加
-    testAnnotationProcessor 'org.projectlombok:lombok'  // 追加
-    
-    implementation "org.seasar.doma:doma-core:2.51.0"
-    annotationProcessor "org.seasar.doma:doma-processor:2.51.0"
-    
-	implementation 'org.seasar.doma.boot:doma-spring-boot-starter:1.1.1'
-	runtimeOnly 'mysql:mysql-connector-java'
 }
 
 sourceSets {
@@ -63,7 +65,6 @@ sourceSets {
 
 compileJava {
     dependsOn copyDomaResourcesJava
-    dependsOn processResources
 }
 
 processResources {
@@ -72,6 +73,34 @@ processResources {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+task gen {
+    group = 'doma-gen'
+    doLast {
+        ant.taskdef(resource: 'domagentask.properties',
+            classpath: configurations.domaGenRuntime.asPath)
+        ant.gen(url: 'jdbc:mysql://localhost:3306/demo', user: 'hdpark', password: 'qkrgmlejr00!') {
+            entityConfig()
+            daoConfig()
+            sqlConfig()
+        }
+    }
+}
+
+task genTestCases {
+    group = 'doma-gen'
+    doLast {
+        ant.taskdef(resource: 'domagentask.properties',
+            classpath: configurations.domaGenRuntime.asPath)
+        ant.gen(url: 'jdbc:mysql://localhost:3306/demo', user: 'hdpark', password: 'qkrgmlejr00!') {
+            sqlTestCaseConfig {
+                fileset(dir: 'src/main/resources') {
+                    include(name: 'META-INF/**/*.sql')
+                }
+            }
+        }
+    }
 }
 
 apply from: 'eclipse.gradle'

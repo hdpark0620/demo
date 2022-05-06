@@ -1,9 +1,9 @@
-package com.example.demo.serivce;
+package com.example.demo.domain.serivce;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.demo.entity.Employee;
+import com.example.demo.domain.entity.Employee;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
